@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Messages – InstaPy{% endblock %}
+
+{% block content %}
+<div class="page-wrapper" style="max-width:680px">
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <h2 style="margin:0">Messages</h2>
+    </div>
+
+    {% if conversations %}
+      <ul class="inbox-list">
+        {% for c in conversations %}
+        <li class="inbox-item {{ 'inbox-item--unread' if c.unread > 0 else '' }}">
+          <a href="{{ url_for('messages_thread', other_id=c.id) }}" class="inbox-link">
+            <img src="{{ c.avatar_url or url_for('static', filename='images/default_avatar.png') }}"
+                 alt="{{ c.username }}" class="inbox-avatar">
+            <div class="inbox-body">
+              <div class="inbox-header">
+                <span class="inbox-username">{{ c.username }}</span>
+                <span class="inbox-time">
+                  {{ c.last_at.strftime('%b %d') if c.last_at else '' }}
+                </span>
+              </div>
+              <div class="inbox-preview">{{ (c.last_body or '')[:60] }}{% if c.last_body and c.last_body|length > 60 %}…{% endif %}</div>
+            </div>
+            {% if c.unread > 0 %}
+              <span class="badge-unread">{{ c.unread }}</span>
+            {% endif %}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="empty-state" style="padding:48px 0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2"
+             style="color:var(--muted);margin-bottom:12px">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <h3>No messages yet</h3>
+        <p>Visit someone's profile and send them a message!</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

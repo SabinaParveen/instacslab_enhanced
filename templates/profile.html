@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}{{ owner.username }} – InstaPy{% endblock %}
+
+{% block content %}
+<div class="page-wrapper" style="max-width:820px">
+
+  <!-- Profile Header -->
+  <div class="card" style="margin-bottom:24px">
+    <div class="profile-header">
+      <img class="profile-avatar"
+           src="{{ owner.avatar_url or url_for('static', filename='images/default_avatar.png') }}"
+           alt="{{ owner.username }}">
+
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <h2 style="margin:0">{{ owner.username }}</h2>
+
+          {% if not is_own_profile %}
+            <button class="follow-btn {{ 'following' if is_following else 'not-following' }}"
+                    data-user-id="{{ owner.id }}">
+              {{ 'Following' if is_following else 'Follow' }}
+            </button>
+            <a href="{{ url_for('messages_thread', other_id=owner.id) }}"
+               class="btn btn-outline btn-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none"
+                   viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              Message
+            </a>
+          {% else %}
+            <a href="{{ url_for('upload') }}" class="btn btn-outline btn-sm">+ New Post</a>
+            <a href="{{ url_for('edit_profile') }}" class="btn btn-outline btn-sm">Edit Profile</a>
+          {% endif %}
+        </div>
+
+        <div class="profile-stats">
+          <div class="stat"><strong>{{ posts|length }}</strong><span>Posts</span></div>
+          <div class="stat"><strong id="follower-count">{{ follower_count }}</strong><span>Followers</span></div>
+          <div class="stat"><strong>{{ following_count }}</strong><span>Following</span></div>
+        </div>
+
+        {% if owner.bio %}
+          <div class="profile-bio">{{ owner.bio }}</div>
+        {% endif %}
+
+        <div style="font-size:12px;color:var(--muted);margin-top:8px">
+          Joined {{ owner.created_at.strftime('%B %Y') if owner.created_at else '' }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Post Grid -->
+  {% if posts %}
+    <div class="card">
+      <div class="profile-grid">
+        {% for post in posts %}
+        <div class="profile-grid-item">
+          <img src="{{ post.image_url }}" alt="Post" loading="lazy">
+          <div class="profile-grid-overlay">
+            <span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                   fill="white" viewBox="0 0 24 24">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06
+                         a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78
+                         1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+              {{ post.like_count }}
+            </span>
+            {% if is_own_profile %}
+            <form method="POST" action="{{ url_for('delete_post', post_id=post.id) }}"
+                  onsubmit="return confirm('Delete this post?')" style="display:inline">
+              <button type="submit" style="background:rgba(220,38,38,.85);border:none;
+                color:#fff;font-size:12px;font-weight:600;padding:4px 10px;
+                border-radius:6px;cursor:pointer;">Delete</button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% else %}
+    <div class="empty-state card">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+           stroke="currentColor" stroke-width="1.5">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+        <circle cx="8.5" cy="8.5" r="1.5"/>
+        <polyline points="21 15 16 10 5 21"/>
+      </svg>
+      <h3>No posts yet</h3>
+      {% if is_own_profile %}
+        <p><a href="{{ url_for('upload') }}">Share your first photo!</a></p>
+      {% else %}
+        <p>{{ owner.username }} hasn't posted anything yet.</p>
+      {% endif %}
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}
