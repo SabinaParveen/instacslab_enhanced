@@ -33,7 +33,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 # ──────────────────────────────────────────────
 def get_db():
     """Open a new PostgreSQL connection."""
-    db_url = app.config.get('DATABASE_URL')
+    db_url = os.getenv("DATABASE_URL")
     if db_url:
         # Render supplies postgres:// but psycopg2 needs postgresql://
         if db_url.startswith('postgres://'):
