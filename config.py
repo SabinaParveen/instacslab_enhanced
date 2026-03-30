@@ -19,4 +19,4 @@ class Config:
     DB_PORT     = int(os.environ.get('DB_PORT', 5432))
     DB_NAME     = os.environ.get('DB_NAME',     'instacslab')
     DB_USER     = os.environ.get('DB_USER',     'postgres')
-    DB_PASSWORD = os.environ.get('DB_PASSWORD', 'sabi@post')
+    DB_PASSWORD = os.environ.get('DB_PASSWORD', 'postgres')
